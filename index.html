@@ -1,0 +1,178 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Psychiatry Clinic English Trainer</title>
+    <link rel="stylesheet" href="./styles.css?v=20260629-coachbelow1" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-label="Session controls">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img">
+              <rect x="10" y="12" width="44" height="40" rx="8" fill="#f4f2ea" />
+              <path d="M20 31h24M32 19v24" stroke="#1f6f78" stroke-width="5" stroke-linecap="round" />
+              <path d="M18 49c6-9 22-9 28 0" fill="none" stroke="#d56f3e" stroke-width="4" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div>
+            <p class="eyebrow">Psychiatry Clinic English</p>
+            <h1>진료실 영어 게임</h1>
+          </div>
+        </div>
+        <div class="top-actions">
+          <label class="select-label">
+            <span>주제</span>
+            <select id="topicSelect"></select>
+          </label>
+          <div id="topicButtons" class="topic-buttons" aria-label="주제 빠른 선택"></div>
+        </div>
+      </section>
+
+      <section class="dashboard" aria-label="Practice dashboard">
+        <aside class="session-panel">
+          <div class="patient-card">
+            <div class="patient-visual" aria-hidden="true">
+              <svg viewBox="0 0 180 140">
+                <rect width="180" height="140" rx="8" fill="#cfe6e0" />
+                <circle cx="91" cy="52" r="25" fill="#f5c7a9" />
+                <path d="M50 122c7-34 73-36 83 0" fill="#496b86" />
+                <path d="M72 47c8-15 34-16 43 0 5-15-7-29-24-29S63 32 72 47Z" fill="#283747" />
+                <path d="M74 71c10 9 27 9 36 0" fill="none" stroke="#84533d" stroke-width="4" stroke-linecap="round" />
+                <rect x="17" y="20" width="35" height="6" rx="3" fill="#f4f2ea" opacity=".9" />
+                <rect x="128" y="24" width="35" height="6" rx="3" fill="#f4f2ea" opacity=".9" />
+                <rect x="122" y="38" width="24" height="6" rx="3" fill="#f4f2ea" opacity=".65" />
+              </svg>
+            </div>
+            <div>
+              <p class="eyebrow">Today's patient</p>
+              <h2 id="patientName">Alex Morgan</h2>
+              <p id="patientBrief" class="patient-brief">Start a session to meet the patient.</p>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <div>
+              <span id="scoreValue">0</span>
+              <p>Score</p>
+            </div>
+            <div>
+              <span id="streakValue">0</span>
+              <p>Streak</p>
+            </div>
+            <div>
+              <span id="roundValue">1</span>
+              <p>Round</p>
+            </div>
+          </div>
+
+          <div class="mode-tabs" role="tablist" aria-label="Game modes">
+            <button class="mode-tab is-active" data-mode="roleplay" type="button">Role-play</button>
+            <button class="mode-tab" data-mode="blank" type="button">Blank</button>
+            <button class="mode-tab" data-mode="choice" type="button">Quiz</button>
+            <button class="mode-tab" data-mode="order" type="button">Order</button>
+            <button class="mode-tab" data-mode="exam" type="button">Exam</button>
+          </div>
+        </aside>
+
+        <section class="play-area">
+          <div class="topic-strip">
+            <div>
+              <p class="eyebrow">Today's topic</p>
+              <h2 id="topicTitle">시작 버튼을 눌러 주세요</h2>
+            </div>
+            <div class="difficulty-control" aria-label="Expression level">
+              <button class="level-btn is-active" data-level="easy" type="button">Easy</button>
+              <button class="level-btn" data-level="natural" type="button">Natural</button>
+              <button class="level-btn" data-level="professional" type="button">Professional</button>
+            </div>
+          </div>
+
+          <div id="essentialSentences" class="sentence-bank" aria-label="Essential sentences"></div>
+
+          <div class="game-surface">
+            <div class="game-header">
+              <div>
+                <p class="eyebrow" id="modeEyebrow">Role-play</p>
+                <h3 id="promptTitle">진료를 시작해 보세요</h3>
+              </div>
+              <button id="speakBtn" class="icon-btn" type="button" title="Read patient line aloud" aria-label="Read patient line aloud">
+                <span aria-hidden="true">▶</span>
+              </button>
+            </div>
+
+            <div id="clinicScene" class="clinic-scene" aria-label="Clinic conversation scene">
+              <div class="clinic-room" aria-hidden="true">
+                <div class="wall-frame"></div>
+                <div class="window-frame"></div>
+                <div class="doctor-figure">
+                  <div class="role-tag">DOCTOR</div>
+                  <div class="doctor-photo-frame">
+                    <img class="doctor-photo" src="./doctor-photo.jpg" alt="Doctor" />
+                  </div>
+                </div>
+                <div class="desk">
+                  <div class="monitor"></div>
+                  <div class="notepad"></div>
+                </div>
+                <div class="patient-figure">
+                  <div class="role-tag">PATIENT</div>
+                  <div class="patient-photo-frame">
+                    <img class="patient-photo" src="./patient-photo.png" alt="Patient" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="dialogue-row doctor-row">
+                <div class="dialogue-avatar doctor-avatar" aria-hidden="true">Dr</div>
+                <div class="speech-bubble doctor-bubble">
+                  <span class="speaker-label">Doctor</span>
+                  <div id="doctorBubble" lang="en">Type your first question to begin the visit.</div>
+                </div>
+              </div>
+
+              <div class="dialogue-row patient-row">
+                <div class="speech-bubble patient-bubble">
+                  <span class="speaker-label">Patient</span>
+                  <div id="patientLine" lang="en">Press Start to begin.</div>
+                </div>
+                <div class="dialogue-avatar patient-avatar" aria-hidden="true">Pt</div>
+              </div>
+            </div>
+
+            <div id="answerZone" class="answer-zone"></div>
+            <div class="coach-box coach-box-inline">
+              <p class="eyebrow">Coach</p>
+              <div id="coachText">짧게 매일 반복할 수 있는 진료실 영어 훈련을 시작합니다.</div>
+            </div>
+            <div id="correctionStatus" class="correction-status" aria-live="polite"></div>
+            <div id="voiceStatus" class="voice-status" aria-live="polite">마이크 버튼을 누르고 영어로 질문하세요.</div>
+
+            <div class="command-row">
+              <button id="visitStartBtn" class="primary-btn" type="button">진료 시작</button>
+              <button id="micBtn" class="mic-btn" type="button">말하기</button>
+              <button id="stopBtn" class="stop-btn" type="button">말하기 종료</button>
+              <button id="checkBtn" class="primary-btn" type="button">확인</button>
+              <button id="hintBtn" class="secondary-btn" type="button">힌트</button>
+              <button id="nextBtn" class="secondary-btn" type="button">다음</button>
+              <button id="feedbackBtn" class="secondary-btn" type="button">피드백</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="feedback-panel">
+          <div class="checklist-box">
+            <p class="eyebrow">Conversation targets</p>
+            <ul id="targetChecklist"></ul>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./app.js?v=20260629-coachbelow1"></script>
+  </body>
+</html>
+
+
