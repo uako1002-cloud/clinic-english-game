@@ -697,12 +697,16 @@ let streak = 0;
 let selectedChoice = null;
 let orderedTokens = [];
 let orderAvailableTokens = [];
+let currentOrderSentence = "";
 let activeTargets = new Set();
 let roleplayLog = [];
 let feedbackStyle = "normal";
 let recognition = null;
 let isListening = false;
+let recognitionActive = false;
 let finalVoiceText = "";
+let voiceStopRequested = false;
+let voiceRestartTimer = null;
 let autoPatientVoice = true;
 let speechUnlocked = false;
 let visitStarted = false;
@@ -757,6 +761,39 @@ function normalize(text) {
   return text.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ").trim();
 }
 
+function cleanOrderSentence(sentence) {
+  return sentence
+    .replace(/[?!.,;:]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getOrderSentencePool() {
+  const pool = uniqueItems([
+    currentTopic.order,
+    ...getEssentialPool(currentTopic, "easy"),
+    ...getEssentialPool(currentTopic, "natural"),
+    ...getSessionEssentials(currentLevel)
+  ])
+    .map(cleanOrderSentence)
+    .filter((sentence) => {
+      const wordCount = sentence.split(" ").length;
+      return wordCount >= 4 && wordCount <= 11;
+    });
+
+  return pool.length ? pool : [cleanOrderSentence(currentTopic.order)];
+}
+
+function chooseOrderSentence(avoidCurrent = true) {
+  const pool = getOrderSentencePool();
+  const candidates = avoidCurrent && pool.length > 1
+    ? pool.filter((sentence) => normalize(sentence) !== normalize(currentOrderSentence))
+    : pool;
+  currentOrderSentence = shuffle(candidates.length ? candidates : pool)[0];
+  orderedTokens = [];
+  orderAvailableTokens = shuffle(currentOrderSentence.split(" "));
+}
+
 function init() {
   topics.forEach((topic) => {
     const option = document.createElement("option");
@@ -801,6 +838,10 @@ function bindEvents() {
     btn.addEventListener("click", () => {
       currentLevel = btn.dataset.level;
       levelBtns.forEach((item) => item.classList.toggle("is-active", item === btn));
+      selectedChoice = null;
+      orderedTokens = [];
+      orderAvailableTokens = [];
+      currentOrderSentence = "";
       renderSentences();
       renderMode();
     });
@@ -829,6 +870,7 @@ function startSession(topicId = topicSelect.value, options = {}) {
   selectedChoice = null;
   orderedTokens = [];
   orderAvailableTokens = [];
+  currentOrderSentence = "";
   activeTargets = new Set();
   roleplayLog = [];
   visitStarted = false;
@@ -944,6 +986,7 @@ function setMode(mode) {
   selectedChoice = null;
   orderedTokens = [];
   orderAvailableTokens = [];
+  currentOrderSentence = "";
   renderMode();
 }
 
@@ -1090,8 +1133,8 @@ function renderMode() {
     doctorBubble.textContent = "Build the doctor's question in the correct order.";
     patientLine.textContent = "Build the sentence in the correct order.";
     answerZone.innerHTML = `<div id="orderedAnswer" class="ordered-answer"></div><div id="tokenPool" class="token-pool"></div>`;
-    if (!orderAvailableTokens.length && !orderedTokens.length) {
-      orderAvailableTokens = shuffle(currentTopic.order.split(" "));
+    if (!currentOrderSentence || (!orderAvailableTokens.length && !orderedTokens.length)) {
+      chooseOrderSentence(false);
     }
     renderOrderControls();
     return;
@@ -1230,9 +1273,39 @@ function checkAnswer() {
   }
 
   if (currentMode === "order") {
-    const isCorrect = normalize(orderedTokens.join(" ")) === normalize(currentTopic.order);
-    updateResult(isCorrect, `정답: ${currentTopic.order}`);
+    const isCorrect = normalize(orderedTokens.join(" ")) === normalize(currentOrderSentence);
+    updateResult(isCorrect, `정답: ${currentOrderSentence}`);
   }
+}
+
+function finishVoiceQuestion(input) {
+  isListening = false;
+  recognitionActive = false;
+  checkBtn.disabled = false;
+  micBtn.disabled = false;
+  stopBtn.hidden = true;
+  stopBtn.disabled = true;
+  micBtn.classList.remove("is-listening");
+  micBtn.textContent = "말하기";
+  voiceStatus.classList.remove("listening");
+  playTone(440, 90);
+
+  const spoken = finalVoiceText.trim() || input.value.trim();
+  if (!spoken) {
+    voiceStatus.textContent = "인식된 문장이 없습니다. 말하기를 다시 눌러 주세요.";
+    return;
+  }
+
+  input.value = spoken;
+  voiceStatus.textContent = `인식 완료: ${spoken}`;
+  window.setTimeout(() => {
+    try {
+      checkAnswer();
+    } catch (error) {
+      console.error(error);
+      voiceStatus.textContent = "질문 처리 중 오류가 났습니다. 다시 말하기를 눌러 주세요.";
+    }
+  }, 120);
 }
 
 function startVoiceQuestion() {
@@ -1263,14 +1336,20 @@ function startVoiceQuestion() {
 
   unlockPatientVoice();
   finalVoiceText = "";
+  voiceStopRequested = false;
+  if (voiceRestartTimer) {
+    window.clearTimeout(voiceRestartTimer);
+    voiceRestartTimer = null;
+  }
   recognition = new SpeechRecognition();
   recognition.lang = "en-US";
   recognition.interimResults = true;
-  recognition.continuous = false;
+  recognition.continuous = true;
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
     isListening = true;
+    recognitionActive = true;
     checkBtn.disabled = true;
     micBtn.disabled = true;
     stopBtn.hidden = false;
@@ -1309,42 +1388,46 @@ function startVoiceQuestion() {
       "no-speech": "말소리를 감지하지 못했습니다. 다시 말하기를 눌러 천천히 말해 주세요.",
       network: "음성 인식 네트워크 연결이 불안정합니다. 다시 시도해 주세요."
     };
+    if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+      voiceStopRequested = true;
+    }
     voiceStatus.textContent = messages[event.error] || `음성 인식 오류: ${event.error}`;
   };
 
   recognition.onend = () => {
-    isListening = false;
-    checkBtn.disabled = false;
-    micBtn.disabled = false;
-    stopBtn.hidden = true;
-    stopBtn.disabled = true;
-    micBtn.classList.remove("is-listening");
-    micBtn.textContent = "말하기";
-    voiceStatus.classList.remove("listening");
-    playTone(440, 90);
-
-    const spoken = finalVoiceText.trim() || input.value.trim();
-    if (!spoken) {
-      voiceStatus.textContent = "인식된 문장이 없습니다. 말하기를 다시 눌러 주세요.";
+    recognitionActive = false;
+    if (!voiceStopRequested) {
+      voiceStatus.textContent = input.value
+        ? `잠깐 멈춤: ${input.value} 계속 말하세요. 끝나면 말하기 종료를 누르세요.`
+        : "계속 듣고 있습니다. 끝나면 말하기 종료를 누르세요.";
+      voiceRestartTimer = window.setTimeout(() => {
+        try {
+          recognition.start();
+        } catch (error) {
+          console.warn("Speech recognition restart failed", error);
+          isListening = false;
+          recognitionActive = false;
+          checkBtn.disabled = false;
+          micBtn.disabled = false;
+          stopBtn.hidden = true;
+          stopBtn.disabled = true;
+          micBtn.classList.remove("is-listening");
+          micBtn.textContent = "말하기";
+          voiceStatus.classList.remove("listening");
+          voiceStatus.textContent = "음성 인식이 멈췄습니다. 문장이 맞으면 확인을 누르고, 아니면 다시 말하기를 눌러 주세요.";
+        }
+      }, 250);
       return;
     }
 
-    input.value = spoken;
-    voiceStatus.textContent = `인식 완료: ${spoken}`;
-    window.setTimeout(() => {
-      try {
-        checkAnswer();
-      } catch (error) {
-        console.error(error);
-        voiceStatus.textContent = "질문 처리 중 오류가 났습니다. 다시 말하기를 눌러 주세요.";
-      }
-    }, 120);
+    finishVoiceQuestion(input);
   };
 
   try {
     recognition.start();
   } catch (error) {
     isListening = false;
+    recognitionActive = false;
     checkBtn.disabled = false;
     micBtn.disabled = false;
     stopBtn.hidden = true;
@@ -1357,13 +1440,25 @@ function startVoiceQuestion() {
 }
 
 function stopVoiceQuestion() {
+  voiceStopRequested = true;
+  if (voiceRestartTimer) {
+    window.clearTimeout(voiceRestartTimer);
+    voiceRestartTimer = null;
+  }
   if (!isListening || !recognition) return;
   voiceStatus.textContent = "말하기를 종료하는 중입니다.";
   unlockPatientVoice();
+  if (!recognitionActive) {
+    const input = document.querySelector("#doctorInput");
+    if (input) finishVoiceQuestion(input);
+    return;
+  }
   try {
     recognition.stop();
   } catch (error) {
     console.warn("Speech recognition stop failed", error);
+    const input = document.querySelector("#doctorInput");
+    if (input) finishVoiceQuestion(input);
   }
 }
 
@@ -2671,7 +2766,8 @@ function showHint() {
   } else if (currentMode === "choice") {
     coachText.textContent = "힌트: 실제 문진에서 증상, 기간, 위험도, 기능 손상을 바로 확인하는 문장이 좋습니다.";
   } else if (currentMode === "order") {
-    coachText.textContent = `힌트: ${currentTopic.order.split(" ").slice(0, 3).join(" ")} ...`;
+    const orderSentence = currentOrderSentence || cleanOrderSentence(currentTopic.order);
+    coachText.textContent = `힌트: ${orderSentence.split(" ").slice(0, 3).join(" ")} ...`;
   } else if (currentTopic.id === "daily") {
     coachText.textContent = "힌트: 상대의 답을 짧게 받아주고, 일상 소재 하나를 더 물어보세요. 예: That sounds nice. What do you usually do after work?";
   } else {
@@ -2693,8 +2789,13 @@ function nextRound() {
   round += 1;
   roundValue.textContent = round;
   selectedChoice = null;
-  orderedTokens = [];
-  orderAvailableTokens = [];
+  if (currentMode === "order") {
+    chooseOrderSentence(true);
+  } else {
+    orderedTokens = [];
+    orderAvailableTokens = [];
+    currentOrderSentence = "";
+  }
   renderMode();
   coachText.textContent = "다음 문항입니다. 짧고 정확한 진료실 영어로 답해 보세요.";
 }
