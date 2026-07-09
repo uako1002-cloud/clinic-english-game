@@ -1884,12 +1884,6 @@ function correctDoctorSentence(text) {
     corrected = corrected.charAt(0).toUpperCase() + corrected.slice(1);
   }
 
-  const questionStart = /^(what|when|where|why|how|do|does|did|have|has|had|are|is|were|was|can|could|would|will|should)\b/i;
-  if (questionStart.test(corrected) && !/[?.!]$/.test(corrected)) {
-    corrected += "?";
-    notes.push("질문 문장은 물음표로 마무리합니다.");
-  }
-
   return { original, corrected, notes };
 }
 
