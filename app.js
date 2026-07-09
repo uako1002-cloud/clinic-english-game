@@ -695,6 +695,8 @@ let round = 1;
 let score = Number(localStorage.getItem("clinicEnglishScore") || 0);
 let streak = 0;
 let selectedChoice = null;
+let currentQuizOptions = [];
+let currentQuizAnswerIndex = null;
 let orderedTokens = [];
 let orderAvailableTokens = [];
 let currentOrderSentence = "";
@@ -719,10 +721,21 @@ let lastOrderPress = { key: "", time: 0 };
 const modeLabels = {
   roleplay: "Role-play",
   blank: "Blank challenge",
-  choice: "Clinical quiz",
+  choice: "5-choice quiz",
   order: "Sentence order",
   exam: "Exam mode"
 };
+
+const fallbackQuizDistractors = [
+  "Do you prefer tea or coffee?",
+  "What is your favorite color?",
+  "How often do you travel abroad?",
+  "Did you enjoy math in school?",
+  "What kind of music do you like?",
+  "Do you usually eat breakfast?",
+  "What was your favorite subject in school?",
+  "Do you like working near a window?"
+];
 
 function shuffle(items) {
   return [...items].sort(() => Math.random() - 0.5);
@@ -759,6 +772,39 @@ function getSessionEssentials(level = currentLevel) {
 
 function normalize(text) {
   return text.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ").trim();
+}
+
+function addUniqueOption(options, option, correctAnswer) {
+  if (!option) return;
+  const normalized = normalize(option);
+  if (!normalized || normalized === normalize(correctAnswer)) return;
+  if (options.some((item) => normalize(item) === normalized)) return;
+  options.push(option);
+}
+
+function buildFiveChoiceQuiz() {
+  const correctAnswer = currentTopic.choice.options[currentTopic.choice.answer];
+  const wrongOptions = [];
+
+  currentTopic.choice.options.forEach((option, index) => {
+    if (index !== currentTopic.choice.answer) addUniqueOption(wrongOptions, option, correctAnswer);
+  });
+
+  fallbackQuizDistractors.forEach((option) => addUniqueOption(wrongOptions, option, correctAnswer));
+
+  topics.forEach((topic) => {
+    topic.choice.options.forEach((option, index) => {
+      if (topic.id !== currentTopic.id || index !== topic.choice.answer) {
+        addUniqueOption(wrongOptions, option, correctAnswer);
+      }
+    });
+  });
+
+  const options = shuffle([correctAnswer, ...wrongOptions.slice(0, 4)]);
+  return {
+    options,
+    answerIndex: options.findIndex((option) => normalize(option) === normalize(correctAnswer))
+  };
 }
 
 function cleanOrderSentence(sentence) {
@@ -839,6 +885,8 @@ function bindEvents() {
       currentLevel = btn.dataset.level;
       levelBtns.forEach((item) => item.classList.toggle("is-active", item === btn));
       selectedChoice = null;
+      currentQuizOptions = [];
+      currentQuizAnswerIndex = null;
       orderedTokens = [];
       orderAvailableTokens = [];
       currentOrderSentence = "";
@@ -868,6 +916,8 @@ function startSession(topicId = topicSelect.value, options = {}) {
   round = 1;
   streak = 0;
   selectedChoice = null;
+  currentQuizOptions = [];
+  currentQuizAnswerIndex = null;
   orderedTokens = [];
   orderAvailableTokens = [];
   currentOrderSentence = "";
@@ -984,6 +1034,8 @@ function setMode(mode) {
   currentMode = mode;
   modeTabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.mode === mode));
   selectedChoice = null;
+  currentQuizOptions = [];
+  currentQuizAnswerIndex = null;
   orderedTokens = [];
   orderAvailableTokens = [];
   currentOrderSentence = "";
@@ -1099,12 +1151,15 @@ function renderMode() {
     micBtn.disabled = true;
     micBtn.style.display = "none";
     stopBtn.hidden = true;
-    voiceStatus.textContent = "이 모드는 표현 선택 훈련입니다.";
-    doctorBubble.textContent = "Choose the sentence you would use in clinic.";
-    patientLine.textContent = "Choose the most clinically useful English sentence.";
+    voiceStatus.textContent = "이 모드는 5지선다형 표현 선택 훈련입니다.";
+    doctorBubble.textContent = "Choose the one correct answer from five options.";
+    patientLine.textContent = "5개의 답 후보 중 정답 1개를 고르세요.";
+    const quiz = buildFiveChoiceQuiz();
+    currentQuizOptions = quiz.options;
+    currentQuizAnswerIndex = quiz.answerIndex;
     const grid = document.createElement("div");
     grid.className = "choice-grid";
-    currentTopic.choice.options.forEach((option, index) => {
+    currentQuizOptions.forEach((option, index) => {
       const btn = document.createElement("button");
       btn.className = "choice-btn";
       btn.type = "button";
@@ -1263,12 +1318,14 @@ function checkAnswer() {
       coachText.textContent = "답을 하나 선택해 주세요.";
       return;
     }
-    const isCorrect = selectedChoice === currentTopic.choice.answer;
+    const answerIndex = currentQuizAnswerIndex ?? currentTopic.choice.answer;
+    const answerText = currentQuizOptions[answerIndex] || currentTopic.choice.options[currentTopic.choice.answer];
+    const isCorrect = selectedChoice === answerIndex;
     document.querySelectorAll(".choice-btn").forEach((btn, index) => {
-      btn.classList.toggle("correct", index === currentTopic.choice.answer);
+      btn.classList.toggle("correct", index === answerIndex);
       btn.classList.toggle("wrong", index === selectedChoice && !isCorrect);
     });
-    updateResult(isCorrect, `가장 좋은 표현: ${currentTopic.choice.options[currentTopic.choice.answer]}`);
+    updateResult(isCorrect, `정답: ${answerText}`);
     return;
   }
 
@@ -2789,6 +2846,8 @@ function nextRound() {
   round += 1;
   roundValue.textContent = round;
   selectedChoice = null;
+  currentQuizOptions = [];
+  currentQuizAnswerIndex = null;
   if (currentMode === "order") {
     chooseOrderSentence(true);
   } else {
