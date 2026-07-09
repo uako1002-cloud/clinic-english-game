@@ -695,8 +695,10 @@ let round = 1;
 let score = Number(localStorage.getItem("clinicEnglishScore") || 0);
 let streak = 0;
 let selectedChoice = null;
+let currentQuizPrompt = "";
 let currentQuizOptions = [];
 let currentQuizAnswerIndex = null;
+let currentQuizExplanation = "";
 let orderedTokens = [];
 let orderAvailableTokens = [];
 let currentOrderSentence = "";
@@ -721,9 +723,194 @@ let lastOrderPress = { key: "", time: 0 };
 const modeLabels = {
   roleplay: "Role-play",
   blank: "Blank challenge",
-  choice: "5-choice quiz",
+  choice: "Advanced quiz",
   order: "Sentence order",
   exam: "Exam mode"
+};
+
+const advancedQuizBank = {
+  depression: [
+    {
+      prompt: "A patient says, \"I still go to work, but nothing feels worth the effort anymore.\" Which follow-up most precisely assesses anhedonia while keeping the tone natural?",
+      options: [
+        "Are there things you used to enjoy that do not feel enjoyable now?",
+        "Do you think your job is the main cause of your symptoms?",
+        "Have you been sleeping more than usual on weekends?",
+        "Would taking a short vacation make you feel better?",
+        "Are you able to complete all of your work tasks on time?"
+      ],
+      answer: 0,
+      explanation: "The correct answer asks directly about loss of interest or pleasure without assuming the cause."
+    },
+    {
+      prompt: "In an intake interview, the patient reports low mood, early-morning awakening, and reduced productivity. Which question best clarifies risk without sounding abrupt or judgmental?",
+      options: [
+        "Have you had thoughts that life is not worth living, or thoughts of harming yourself?",
+        "You are not planning to do anything dangerous, are you?",
+        "Do you promise me that you will stay safe until next time?",
+        "Are these symptoms mostly caused by poor sleep?",
+        "Would you like to avoid talking about safety today?"
+      ],
+      answer: 0,
+      explanation: "It asks about passive death wishes and self-harm directly while remaining clinically appropriate."
+    }
+  ],
+  panic: [
+    {
+      prompt: "A patient describes sudden episodes of palpitations, chest tightness, and fear of dying. Which question best distinguishes panic attacks from general anxiety?",
+      options: [
+        "Do the symptoms reach a peak within minutes?",
+        "Do you feel stressed most days?",
+        "Are you worried about your future career?",
+        "Do you usually avoid caffeine after dinner?",
+        "Have you always been a sensitive person?"
+      ],
+      answer: 0,
+      explanation: "A rapid peak within minutes is central to assessing panic attacks."
+    },
+    {
+      prompt: "The patient says, \"I stopped taking the subway because I am afraid it will happen again.\" What is the most clinically targeted follow-up?",
+      options: [
+        "Have you started avoiding places or situations because you fear another attack?",
+        "Do you think the subway system is unsafe?",
+        "Would driving instead be more comfortable for you?",
+        "How often do you exercise during the week?",
+        "Did anyone else on the subway notice your symptoms?"
+      ],
+      answer: 0,
+      explanation: "The key issue is avoidance driven by fear of recurrent panic symptoms."
+    }
+  ],
+  insomnia: [
+    {
+      prompt: "A patient says, \"I lie in bed for hours, check the clock, and feel worse.\" Which response best gathers sleep-history data without giving premature advice?",
+      options: [
+        "Walk me through a typical night, from bedtime to waking up.",
+        "You should stop checking the clock immediately.",
+        "It sounds like your insomnia is caused by anxiety.",
+        "Do you want medication to make you sleep faster?",
+        "Try not to use your phone before bed."
+      ],
+      answer: 0,
+      explanation: "A timeline question collects sleep onset, awakenings, behaviors, and wake time before treatment advice."
+    },
+    {
+      prompt: "Which question best assesses daytime impairment from insomnia rather than merely confirming poor sleep?",
+      options: [
+        "How is your sleep affecting your mood, concentration, or functioning?",
+        "What color are the curtains in your bedroom?",
+        "Do you prefer sleeping on your side or back?",
+        "What time does the sun rise in your neighborhood?",
+        "Do you own a comfortable pillow?"
+      ],
+      answer: 0,
+      explanation: "Daytime impairment is assessed by asking about mood, concentration, and functioning."
+    }
+  ],
+  adhd: [
+    {
+      prompt: "An adult patient reports missed deadlines and disorganization. Which question best checks whether ADHD symptoms are developmentally persistent rather than only recent?",
+      options: [
+        "Were attention or organization problems present before age 12?",
+        "Do you dislike your current job?",
+        "Have you been sleeping poorly this week?",
+        "Do you use your phone too often at work?",
+        "Would a stricter schedule solve the problem?"
+      ],
+      answer: 0,
+      explanation: "Adult ADHD assessment requires evidence that symptoms began in childhood."
+    },
+    {
+      prompt: "A patient focuses well on interesting design projects but cannot finish routine paperwork. Which question best tests functional impairment across settings?",
+      options: [
+        "Do these difficulties show up in more than one setting, like work and home?",
+        "Are creative projects easier because you enjoy them?",
+        "Do you prefer visual tasks over written tasks?",
+        "Would a different manager help you perform better?",
+        "How many hours did you work last week?"
+      ],
+      answer: 0,
+      explanation: "The question checks whether symptoms occur across multiple settings, not only in one task type."
+    }
+  ],
+  suicide: [
+    {
+      prompt: "A patient says, \"I thought about taking all my sleeping pills, but my daughter came home.\" Which question should come next to assess immediate danger?",
+      options: [
+        "Do you still have access to those pills now?",
+        "How old is your daughter?",
+        "Did the pills help your sleep before?",
+        "Do you feel guilty about having those thoughts?",
+        "Would you prefer to discuss medication another day?"
+      ],
+      answer: 0,
+      explanation: "After a specific method is disclosed, current access to means is an immediate safety priority."
+    },
+    {
+      prompt: "Which wording best assesses suicidal intent without softening the question so much that the meaning becomes unclear?",
+      options: [
+        "When you had the thought, did you feel you might actually act on it?",
+        "You would never really do that, right?",
+        "Were those thoughts just stress rather than something serious?",
+        "Can we skip the details if they feel uncomfortable?",
+        "Do you generally consider yourself an impulsive person?"
+      ],
+      answer: 0,
+      explanation: "It directly evaluates intent while avoiding judgment or leading reassurance."
+    }
+  ],
+  medication: [
+    {
+      prompt: "A patient starting an SSRI asks, \"If I do not feel better tomorrow, does that mean it failed?\" Which explanation is most accurate and reassuring?",
+      options: [
+        "Some people notice early changes in two weeks, but the fuller effect often takes four to six weeks.",
+        "If it does not work after one dose, we should stop it.",
+        "You should not expect any effect for at least one year.",
+        "It will work immediately if the diagnosis is correct.",
+        "Side effects prove that the medication is working."
+      ],
+      answer: 0,
+      explanation: "The correct answer gives a realistic onset window without overpromising."
+    },
+    {
+      prompt: "A patient says, \"Once I feel better, I can stop it suddenly, right?\" Which response best balances safety and collaboration?",
+      options: [
+        "If you want to stop, please contact me first so we can taper it safely.",
+        "You must take it forever no matter what happens.",
+        "Stopping suddenly is always harmless with this medication.",
+        "You can stop it as soon as your mood improves.",
+        "Only severe side effects matter, so ignore mild symptoms."
+      ],
+      answer: 0,
+      explanation: "The answer explains tapering and invites contact before changing medication."
+    }
+  ],
+  daily: [
+    {
+      prompt: "During small talk before a clinical interview, the patient says, \"My morning was quiet. I had coffee and checked a few messages.\" Which response best keeps the conversation natural?",
+      options: [
+        "That sounds like a calm start. What do you usually do after work?",
+        "Do you have access to pills or weapons at home?",
+        "How many panic attacks did you have this week?",
+        "Have you noticed diminished interest in most activities?",
+        "You should avoid caffeine because it is unhealthy."
+      ],
+      answer: 0,
+      explanation: "The correct response acknowledges the answer and adds a light follow-up question."
+    },
+    {
+      prompt: "Which response best demonstrates rapport-building rather than abrupt symptom interrogation?",
+      options: [
+        "That sounds interesting. What kind of things do you like to do in your free time?",
+        "How long have you had suicidal thoughts?",
+        "Do the symptoms reach a peak within minutes?",
+        "Were these problems present before age 12?",
+        "Please describe all medication side effects in order."
+      ],
+      answer: 0,
+      explanation: "Rapport-building uses a brief response plus a natural everyday follow-up."
+    }
+  ]
 };
 
 const fallbackQuizDistractors = [
@@ -782,7 +969,26 @@ function addUniqueOption(options, option, correctAnswer) {
   options.push(option);
 }
 
+function buildQuizFromQuestion(question) {
+  const optionRecords = question.options.map((option, index) => ({
+    text: option,
+    correct: index === question.answer
+  }));
+  const shuffled = shuffle(optionRecords);
+  return {
+    prompt: question.prompt,
+    options: shuffled.map((item) => item.text),
+    answerIndex: shuffled.findIndex((item) => item.correct),
+    explanation: question.explanation || ""
+  };
+}
+
 function buildFiveChoiceQuiz() {
+  const advancedQuestions = advancedQuizBank[currentTopic.id] || [];
+  if (advancedQuestions.length) {
+    return buildQuizFromQuestion(shuffle(advancedQuestions)[0]);
+  }
+
   const correctAnswer = currentTopic.choice.options[currentTopic.choice.answer];
   const wrongOptions = [];
 
@@ -802,8 +1008,10 @@ function buildFiveChoiceQuiz() {
 
   const options = shuffle([correctAnswer, ...wrongOptions.slice(0, 4)]);
   return {
+    prompt: currentTopic.choice.prompt,
     options,
-    answerIndex: options.findIndex((option) => normalize(option) === normalize(correctAnswer))
+    answerIndex: options.findIndex((option) => normalize(option) === normalize(correctAnswer)),
+    explanation: "The correct answer best matches the clinical purpose of the question."
   };
 }
 
@@ -885,8 +1093,10 @@ function bindEvents() {
       currentLevel = btn.dataset.level;
       levelBtns.forEach((item) => item.classList.toggle("is-active", item === btn));
       selectedChoice = null;
+      currentQuizPrompt = "";
       currentQuizOptions = [];
       currentQuizAnswerIndex = null;
+      currentQuizExplanation = "";
       orderedTokens = [];
       orderAvailableTokens = [];
       currentOrderSentence = "";
@@ -916,8 +1126,10 @@ function startSession(topicId = topicSelect.value, options = {}) {
   round = 1;
   streak = 0;
   selectedChoice = null;
+  currentQuizPrompt = "";
   currentQuizOptions = [];
   currentQuizAnswerIndex = null;
+  currentQuizExplanation = "";
   orderedTokens = [];
   orderAvailableTokens = [];
   currentOrderSentence = "";
@@ -1034,8 +1246,10 @@ function setMode(mode) {
   currentMode = mode;
   modeTabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.mode === mode));
   selectedChoice = null;
+  currentQuizPrompt = "";
   currentQuizOptions = [];
   currentQuizAnswerIndex = null;
+  currentQuizExplanation = "";
   orderedTokens = [];
   orderAvailableTokens = [];
   currentOrderSentence = "";
@@ -1144,19 +1358,21 @@ function renderMode() {
   }
 
   if (currentMode === "choice") {
-    promptTitle.textContent = currentTopic.choice.prompt;
+    const quiz = buildFiveChoiceQuiz();
+    currentQuizPrompt = quiz.prompt;
+    currentQuizOptions = quiz.options;
+    currentQuizAnswerIndex = quiz.answerIndex;
+    currentQuizExplanation = quiz.explanation;
+    promptTitle.textContent = currentQuizPrompt;
     checkBtn.textContent = "확인";
     visitStartBtn.style.display = "none";
     checkBtn.disabled = false;
     micBtn.disabled = true;
     micBtn.style.display = "none";
     stopBtn.hidden = true;
-    voiceStatus.textContent = "이 모드는 5지선다형 표현 선택 훈련입니다.";
-    doctorBubble.textContent = "Choose the one correct answer from five options.";
-    patientLine.textContent = "5개의 답 후보 중 정답 1개를 고르세요.";
-    const quiz = buildFiveChoiceQuiz();
-    currentQuizOptions = quiz.options;
-    currentQuizAnswerIndex = quiz.answerIndex;
+    voiceStatus.textContent = "이 모드는 토익/토플식 5지선다형 상황 판단 문제입니다.";
+    doctorBubble.textContent = "Read the situation and choose the best clinical-English response.";
+    patientLine.textContent = "상황을 읽고 5개의 답 후보 중 가장 적절한 1개를 고르세요.";
     const grid = document.createElement("div");
     grid.className = "choice-grid";
     currentQuizOptions.forEach((option, index) => {
@@ -1325,7 +1541,7 @@ function checkAnswer() {
       btn.classList.toggle("correct", index === answerIndex);
       btn.classList.toggle("wrong", index === selectedChoice && !isCorrect);
     });
-    updateResult(isCorrect, `정답: ${answerText}`);
+    updateResult(isCorrect, `정답: ${answerText}${currentQuizExplanation ? `\n해설: ${currentQuizExplanation}` : ""}`);
     return;
   }
 
@@ -2846,8 +3062,10 @@ function nextRound() {
   round += 1;
   roundValue.textContent = round;
   selectedChoice = null;
+  currentQuizPrompt = "";
   currentQuizOptions = [];
   currentQuizAnswerIndex = null;
+  currentQuizExplanation = "";
   if (currentMode === "order") {
     chooseOrderSentence(true);
   } else {
