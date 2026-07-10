@@ -477,6 +477,114 @@ const topics = [
       answer: 0
     },
     order: "Do you feel an urge before the tic happens"
+  },
+  {
+    id: "counseling",
+    label: "심리상담",
+    title: "Counseling conversation",
+    patient: "Jamie Choi",
+    brief: "A counseling client practicing emotional expression, rapport, goals, coping, and collaborative next steps.",
+    targets: ["Opening", "Rapport", "Problem definition", "Emotion reflection", "Goals", "Coping", "Strengths", "Next steps"],
+    patientLines: [
+      "I have been feeling overwhelmed lately, but I am not sure where to start.",
+      "Work and family stress have been piling up, and I feel tense most days.",
+      "I want to talk, but I am worried I will not explain things clearly.",
+      "I hope counseling can help me understand my feelings and cope better."
+    ],
+    essentials: {
+      easy: [
+        "What would you like to talk about today?",
+        "That sounds really stressful.",
+        "What has been the hardest part for you?",
+        "What would you like to be different after counseling?",
+        "What helps you calm down, even a little?"
+      ],
+      natural: [
+        "Where would you like to begin today?",
+        "It sounds like you have been carrying a lot on your own.",
+        "When things feel overwhelming, what thoughts or feelings come up most strongly?",
+        "What would feel like a helpful first goal for our work together?",
+        "What have you tried so far that helps, even briefly?"
+      ],
+      professional: [
+        "What feels most important for us to focus on in today's session?",
+        "I hear that this has felt heavy and isolating, and I appreciate you putting it into words.",
+        "Can we slow down and identify the emotions, thoughts, and situations that seem most connected?",
+        "If counseling were helpful, what changes would you hope to notice in your daily life?",
+        "What coping strategies, supports, or strengths have helped you get through difficult moments?"
+      ]
+    },
+    blank: {
+      prompt: "What would feel like a helpful first ______ for our work together?",
+      answer: "goal",
+      hint: "counseling goal"
+    },
+    choice: {
+      prompt: "Which response best reflects empathy in a counseling session?",
+      options: [
+        "It sounds like you have been carrying a lot on your own.",
+        "You should simply stop worrying about it.",
+        "That is not a real problem.",
+        "Let me tell you exactly what to do without hearing more.",
+        "Other people have it worse."
+      ],
+      answer: 0
+    },
+    order: "Where would you like to begin today"
+  },
+  {
+    id: "developmental",
+    label: "발달장애",
+    title: "Developmental assessment",
+    patient: "Robin Park",
+    brief: "Parent of a child with delayed language, social communication concerns, sensory sensitivity, and school difficulties.",
+    targets: ["Developmental history", "Language", "Social communication", "Repetitive behaviors", "Sensory", "Adaptive function", "School support", "Family history"],
+    patientLines: [
+      "My child started talking later than other children, and conversations are still hard.",
+      "Teachers say he plays alone and has trouble joining other children.",
+      "He gets very upset with loud sounds and changes in routine.",
+      "We want to understand whether this is a developmental issue and what support he needs."
+    ],
+    essentials: {
+      easy: [
+        "When did you first notice developmental concerns?",
+        "When did your child start using words?",
+        "How does your child play with other children?",
+        "Does your child have repetitive behaviors or strong routines?",
+        "Are there sounds, textures, or places that feel overwhelming?"
+      ],
+      natural: [
+        "When did you first become concerned about your child's development?",
+        "Can you describe your child's language development, including first words and current communication?",
+        "How does your child interact with other children or respond to social cues?",
+        "Are there repetitive behaviors, intense interests, or strong distress with changes in routine?",
+        "Does your child have sensory sensitivities, such as sound, texture, food, or clothing sensitivities?"
+      ],
+      professional: [
+        "At what age did developmental concerns first become apparent, and what milestones were delayed?",
+        "Can you outline expressive language, receptive language, pragmatic communication, and current functional communication?",
+        "How does your child use eye contact, gestures, reciprocal conversation, shared enjoyment, and peer interaction?",
+        "Are restricted or repetitive behaviors present, including stereotyped movements, insistence on sameness, or circumscribed interests?",
+        "Are there clinically significant sensory sensitivities or sensory-seeking behaviors affecting daily functioning?"
+      ]
+    },
+    blank: {
+      prompt: "When did you first become concerned about your child's ______?",
+      answer: "development",
+      hint: "child's development"
+    },
+    choice: {
+      prompt: "Which question best assesses social communication in a developmental evaluation?",
+      options: [
+        "How does your child use eye contact, gestures, and back-and-forth interaction?",
+        "What is your favorite color?",
+        "Does your child prefer rice or noodles?",
+        "How often do you travel abroad?",
+        "What time does your child usually eat breakfast?"
+      ],
+      answer: 0
+    },
+    order: "When did you first notice developmental concerns"
   }
 ];
 
@@ -489,7 +597,9 @@ const topicLabels = {
   medication: "약물 설명",
   daily: "일상 대화",
   travel: "여행영어",
-  tic: "틱장애"
+  tic: "틱장애",
+  counseling: "심리상담",
+  developmental: "발달장애"
 };
 
 function getTopicLabel(topic) {
@@ -497,7 +607,7 @@ function getTopicLabel(topic) {
 }
 
 function isFreeConversationTopic(topic = currentTopic) {
-  return ["daily", "travel"].includes(topic.id);
+  return ["daily", "travel", "counseling"].includes(topic.id);
 }
 
 const extraEssentials = {
@@ -842,6 +952,82 @@ const extraEssentials = {
       "What prior treatments have been tried, including psychoeducation, CBIT or habit-reversal training, and medication?",
       "Which antecedents, settings, or consequences appear to worsen or reduce the tics?"
     ]
+  },
+  counseling: {
+    easy: [
+      "What would you like to talk about today?",
+      "Where would you like to start?",
+      "That sounds really hard.",
+      "What feeling is strongest right now?",
+      "What has helped you cope before?",
+      "Who supports you when things are difficult?",
+      "What would you like to change?",
+      "What is one small step you could try this week?",
+      "What are you hoping to get from counseling?",
+      "Can we slow down and look at that together?"
+    ],
+    natural: [
+      "Where would you like to begin today?",
+      "It sounds like this has been weighing on you for a while.",
+      "When you think about that situation, what feelings come up first?",
+      "What have you already tried to help yourself get through it?",
+      "Who or what helps you feel less alone when things are difficult?",
+      "If things improved, what would be different in your daily life?",
+      "What would feel like a realistic first step this week?",
+      "Can we look at the thought, feeling, and situation separately?",
+      "What strength helped you keep going even when it was hard?",
+      "Would it be okay if we spent a moment naming the emotion?"
+    ],
+    professional: [
+      "What feels most important for us to focus on in today's session?",
+      "I hear that this has felt heavy, and I appreciate you putting it into words.",
+      "Can we identify the emotions, thoughts, body sensations, and situations that seem connected?",
+      "What coping strategies have you tried, and which ones have helped even briefly?",
+      "What supports, relationships, routines, or values help you stay grounded?",
+      "If counseling were effective, what changes would you hope to observe in daily functioning?",
+      "What would be a realistic, measurable first step before our next meeting?",
+      "Can we examine the automatic thought and consider a more balanced alternative?",
+      "What personal strengths have helped you endure this period?",
+      "Would it be alright if we collaboratively set an agenda for today's session?"
+    ]
+  },
+  developmental: {
+    easy: [
+      "When did you first worry about development?",
+      "When did your child say first words?",
+      "Does your child point to show interest?",
+      "How does your child play with other children?",
+      "Does your child respond to their name?",
+      "Does your child have strong routines?",
+      "Are sounds or textures hard for your child?",
+      "What skills are hard at home or school?",
+      "What support is your child getting at school?",
+      "Does anyone in the family have similar difficulties?"
+    ],
+    natural: [
+      "When did you first become concerned about your child's development?",
+      "Can you describe your child's language development and current communication?",
+      "Does your child point, gesture, or bring things to share interest?",
+      "How does your child play with other children or join group activities?",
+      "How does your child respond to their name or to social cues?",
+      "Are there repetitive behaviors, intense interests, or strong routines?",
+      "Are there sensory sensitivities to sounds, textures, food, clothing, or crowded places?",
+      "What daily living skills are difficult, such as dressing, eating, toileting, or transitions?",
+      "What support or accommodations are available at school?",
+      "Is there a family history of developmental, language, learning, ADHD, or autism-related concerns?"
+    ],
+    professional: [
+      "At what age did developmental concerns first become apparent, and which milestones were delayed?",
+      "Can you outline expressive language, receptive language, pragmatic language, and current functional communication?",
+      "Does your child use pointing, gestures, joint attention, and shared enjoyment to communicate?",
+      "How does your child engage in reciprocal peer interaction, pretend play, and group activities?",
+      "How consistently does your child respond to name, eye contact, facial expression, and social cues?",
+      "Are restricted or repetitive behaviors present, such as stereotyped movements, insistence on sameness, or circumscribed interests?",
+      "Are sensory hyperreactivity, hyporeactivity, or sensory-seeking behaviors affecting daily functioning?",
+      "What adaptive-function impairments are present in self-care, transitions, safety, feeding, or toileting?",
+      "What evaluations, therapies, IEP supports, or school accommodations are currently in place?",
+      "Is there a family history of autism spectrum disorder, language delay, intellectual disability, ADHD, or learning disorders?"
+    ]
   }
 };
 
@@ -1152,6 +1338,58 @@ const advancedQuizBank = {
       answer: 0,
       explanation: "Suppressibility and rebound discomfort are important features to assess in tic disorders."
     }
+  ],
+  counseling: [
+    {
+      prompt: "A client says, \"Everything is piling up, and I do not even know where to start.\" Which counselor response best reflects empathy while inviting exploration?",
+      options: [
+        "It sounds like you have been carrying a lot. Where would you like to begin today?",
+        "You should make a schedule and stop thinking so much.",
+        "That problem is too broad, so choose one topic quickly.",
+        "Other people also feel stressed, so this is normal.",
+        "Let us avoid emotions and focus only on solutions."
+      ],
+      answer: 0,
+      explanation: "The correct response validates the feeling and invites the client to choose a starting point."
+    },
+    {
+      prompt: "A client wants counseling but is unsure what would count as progress. Which question best helps form a collaborative goal?",
+      options: [
+        "If counseling were helpful, what changes would you hope to notice in your daily life?",
+        "Do you want me to decide the goal for you?",
+        "Can you promise to feel better by next week?",
+        "Why have you not solved this already?",
+        "Should we skip goals and only talk freely?"
+      ],
+      answer: 0,
+      explanation: "A collaborative goal question links counseling to observable daily-life change."
+    }
+  ],
+  developmental: [
+    {
+      prompt: "A parent reports delayed speech and difficulty playing with peers. Which question best assesses social communication rather than only language delay?",
+      options: [
+        "How does your child use eye contact, gestures, and back-and-forth interaction?",
+        "What time does your child usually go to sleep?",
+        "Does your child prefer rice or noodles?",
+        "How often does your child catch colds?",
+        "What is your child's favorite cartoon?"
+      ],
+      answer: 0,
+      explanation: "Social communication includes eye contact, gestures, reciprocity, shared enjoyment, and peer interaction."
+    },
+    {
+      prompt: "A child becomes very distressed by changes in routine and repeatedly lines up toys. Which follow-up best targets restricted or repetitive behaviors?",
+      options: [
+        "Are there repetitive behaviors, intense interests, or strong distress with changes in routine?",
+        "Does your child like the color of the toys?",
+        "Do you think the teacher is too strict?",
+        "Would a different breakfast make mornings easier?",
+        "How often does your child watch television?"
+      ],
+      answer: 0,
+      explanation: "The correct question assesses restricted, repetitive patterns and insistence on sameness."
+    }
   ]
 };
 
@@ -1461,7 +1699,7 @@ function handleCommand() {
     return;
   }
 
-  coachText.textContent = "사용 가능한 명령: 시작, 시작 일상, 시작 여행, 시작 틱, 시작 공황, 시작 ADHD, 피드백, 짧게, 자세히, 다시, 문장만, 시험처럼";
+  coachText.textContent = "사용 가능한 명령: 시작, 시작 상담, 시작 발달, 시작 여행, 시작 틱, 시작 일상, 시작 공황, 시작 ADHD, 피드백, 짧게, 자세히, 다시, 문장만, 시험처럼";
   commandInput.value = "";
 }
 
@@ -1476,7 +1714,9 @@ function findTopicId(text) {
     medication: ["약물", "약", "medication", "ssri"],
     daily: ["일상", "자유", "대화", "잡담", "생활", "daily", "free", "conversation", "smalltalk", "small talk"],
     travel: ["여행", "여행영어", "공항", "호텔", "travel", "trip", "airport", "hotel"],
-    tic: ["틱", "틱장애", "뚜렛", "tourette", "tic", "tics"]
+    tic: ["틱", "틱장애", "뚜렛", "tourette", "tic", "tics"],
+    counseling: ["상담", "심리상담", "카운슬링", "therapy", "counseling", "counselling", "psychotherapy"],
+    developmental: ["발달", "발달장애", "자폐", "언어지연", "development", "developmental", "autism", "asd", "language delay"]
   };
   return Object.entries(aliases).find(([, keys]) => keys.some((key) => compact.includes(key)))?.[0] || null;
 }
@@ -2320,6 +2560,14 @@ function evaluateClinicalQuestion(value) {
     ["Shopping", ["shopping", "price", "how much", "pay", "card", "cash", "size"]],
     ["Transportation", ["train", "taxi", "bus", "station", "subway", "transportation", "route"]],
     ["Emergency", ["emergency", "help", "passport", "police", "embassy", "lost", "urgent"]],
+    ["Opening", ["begin", "start", "talk about", "focus on", "today"]],
+    ["Rapport", ["sounds", "hear", "understand", "appreciate", "thank you", "carrying"]],
+    ["Problem definition", ["hardest", "problem", "situation", "what happened", "going on"]],
+    ["Emotion reflection", ["feel", "feeling", "emotion", "thought", "body", "overwhelmed"]],
+    ["Goals", ["goal", "change", "different", "hope", "counseling", "progress"]],
+    ["Coping", ["cope", "coping", "calm", "tried", "helps", "strategy"]],
+    ["Strengths", ["strength", "support", "keep going", "grounded", "values"]],
+    ["Next steps", ["next step", "this week", "before next", "plan", "practice"]],
     ["Chief complaint", ["what brings", "how can i help", "main concern", "problem"]],
     ["Duration", ["how long", "when did", "duration"]],
     ["Anhedonia", ["enjoy", "interest", "pleasure"]],
@@ -2363,7 +2611,15 @@ function evaluateClinicalQuestion(value) {
     ["Premonitory urge", ["urge", "build up", "build-up", "tension", "before the tic"]],
     ["Suppressibility", ["suppress", "hold it", "hold in", "control", "rebound"]],
     ["Course", ["worse", "better", "stress", "tired", "excited", "course", "change"]],
-    ["Comorbidities", ["adhd", "ocd", "anxiety", "attention", "compulsive", "mood"]]
+    ["Comorbidities", ["adhd", "ocd", "anxiety", "attention", "compulsive", "mood"]],
+    ["Developmental history", ["development", "developmental", "milestone", "first notice", "concern", "delayed"]],
+    ["Language", ["language", "words", "communication", "expressive", "receptive", "speech"]],
+    ["Social communication", ["eye contact", "gesture", "point", "social", "peer", "interaction", "respond to name"]],
+    ["Repetitive behaviors", ["repetitive", "routine", "sameness", "intense interest", "line up", "stereotyped"]],
+    ["Sensory", ["sensory", "sound", "texture", "food", "clothing", "overwhelming"]],
+    ["Adaptive function", ["daily living", "dressing", "eating", "toileting", "transition", "self care"]],
+    ["School support", ["school", "teacher", "iep", "support", "accommodation", "therapy"]],
+    ["Family history", ["family history", "family", "similar", "autism", "adhd", "learning"]]
   ];
 
   let matched = [];
@@ -2892,6 +3148,94 @@ const patientResponseBank = {
       "It is hard to explain, but I can try.",
       "The tics feel partly outside my control."
     ]
+  },
+  counseling: {
+    greeting: [
+      "Hi. I am a little nervous, but I am ready to talk.",
+      "Hello. I hope this can help me sort things out."
+    ],
+    opening: [
+      "I think I want to start with the stress I have been feeling.",
+      "The biggest thing today is that I feel overwhelmed."
+    ],
+    rapport: [
+      "Thank you. It helps to hear that without feeling judged.",
+      "I appreciate you saying that. I was worried I would sound weak."
+    ],
+    problemDefinition: [
+      "The hardest part is that everything feels connected and I cannot separate it.",
+      "Work stress and family expectations are both weighing on me."
+    ],
+    emotion: [
+      "The strongest feeling is anxiety, but there is sadness under it too.",
+      "I feel tense in my body and I keep thinking I am failing."
+    ],
+    goals: [
+      "I want to feel calmer and stop reacting so strongly.",
+      "I would like to understand my patterns and communicate better."
+    ],
+    coping: [
+      "Walking helps a little, but I do not do it consistently.",
+      "Talking to a friend helps, but I do not want to burden people."
+    ],
+    strengths: [
+      "I think I am persistent, even when I feel tired.",
+      "I have kept going because I care about my family and my work."
+    ],
+    nextSteps: [
+      "A small step this week could be taking a short walk after work.",
+      "I could write down the thought that comes up when I feel overwhelmed."
+    ],
+    suicide: [
+      "I feel overwhelmed, but I am not thinking about hurting myself.",
+      "No, I do not have thoughts of ending my life."
+    ],
+    general: [
+      "That is a helpful question. I need a moment to think.",
+      "I can try to answer, though it feels a bit complicated."
+    ]
+  },
+  developmental: {
+    chief: [
+      "We are worried about language delay and social interaction.",
+      "The teacher suggested we get a developmental evaluation."
+    ],
+    developmentalHistory: [
+      "We first became concerned around age two when speech was delayed.",
+      "Some milestones were on time, but language and social play seemed delayed."
+    ],
+    language: [
+      "First words came late, and sentences are still limited.",
+      "He can ask for things, but back-and-forth conversation is hard."
+    ],
+    socialCommunication: [
+      "Eye contact is inconsistent, and he does not always respond to his name.",
+      "He often plays alone and has trouble joining other children."
+    ],
+    repetitiveBehaviors: [
+      "He lines up toys and gets upset if we move them.",
+      "Changes in routine can lead to a big meltdown."
+    ],
+    sensory: [
+      "Loud sounds are very hard for him, and some clothing textures bother him.",
+      "He is sensitive to certain foods and covers his ears in crowded places."
+    ],
+    adaptiveFunction: [
+      "Transitions are difficult, and dressing takes a lot of help.",
+      "Toileting and mealtimes still need more support than expected."
+    ],
+    schoolSupport: [
+      "The school has started some speech support, but we are not sure if it is enough.",
+      "Teachers are trying visual schedules and extra transition time."
+    ],
+    familyHistory: [
+      "A cousin had language delay, and there is ADHD in the family.",
+      "There may be autism traits in the family, but no formal diagnosis."
+    ],
+    general: [
+      "I can answer more if you ask about one area at a time.",
+      "We just want to understand what support would help."
+    ]
   }
 };
 
@@ -3292,6 +3636,29 @@ function detectTopicSpecificIntent(text, hasAny) {
     if (hasAny(["when did", "start", "begin", "onset", "first notice", "age"])) return "onset";
   }
 
+  if (currentTopic.id === "counseling") {
+    if (hasAny(["where would you like to begin", "where should we start", "what would you like to talk", "focus on today", "begin today"])) return "opening";
+    if (hasAny(["sounds like", "i hear", "carrying a lot", "appreciate", "without judging", "understand"])) return "rapport";
+    if (hasAny(["hardest part", "what happened", "going on", "main problem", "stress", "piling up", "situation"])) return "problemDefinition";
+    if (hasAny(["feeling", "feelings", "emotion", "thoughts", "body sensation", "overwhelmed", "anxious", "sad"])) return "emotion";
+    if (hasAny(["goal", "goals", "change", "different", "hope", "progress", "counseling helpful"])) return "goals";
+    if (hasAny(["cope", "coping", "calm", "tried", "strategy", "what helps", "walk", "breathing"])) return "coping";
+    if (hasAny(["strength", "support", "kept going", "grounded", "values", "who supports"])) return "strengths";
+    if (hasAny(["next step", "this week", "homework", "practice", "before next", "small step"])) return "nextSteps";
+    if (hasAny(["suicid", "hurt yourself", "harm yourself", "ending your life", "safe"])) return "suicide";
+  }
+
+  if (currentTopic.id === "developmental") {
+    if (hasAny(["development", "developmental", "milestone", "first concerned", "first notice", "delayed", "age"])) return "developmentalHistory";
+    if (hasAny(["language", "words", "speech", "communication", "expressive", "receptive", "sentences"])) return "language";
+    if (hasAny(["eye contact", "gesture", "point", "respond to name", "social", "peer", "interaction", "play with other children"])) return "socialCommunication";
+    if (hasAny(["repetitive", "routine", "sameness", "line up", "intense interest", "restricted", "stereotyped"])) return "repetitiveBehaviors";
+    if (hasAny(["sensory", "sound", "texture", "food", "clothing", "overwhelming", "covers ears"])) return "sensory";
+    if (hasAny(["daily living", "dressing", "eating", "toileting", "transition", "self care", "adaptive"])) return "adaptiveFunction";
+    if (hasAny(["school", "teacher", "iep", "support", "accommodation", "therapy", "speech therapy"])) return "schoolSupport";
+    if (hasAny(["family history", "family", "similar", "autism", "adhd", "learning", "language delay"])) return "familyHistory";
+  }
+
   return null;
 }
 
@@ -3330,12 +3697,12 @@ function detectQuestionIntent(question) {
   if (hasAny(["how old are you", "your age", "what is your age"])) return "age";
   if (hasAny(["are you comfortable", "is this comfortable", "do you feel comfortable", "are you okay talking"])) return "comfort";
   if (hasAny(["is it okay if i ask", "can i ask", "may i ask", "is it alright if"])) return "permission";
+  const topicIntent = detectTopicSpecificIntent(text, hasAny);
+  if (topicIntent) return topicIntent;
   if (isFreeConversationTopic()) {
     const everydayIntent = detectEverydayIntent(text, hasAny);
     if (everydayIntent) return everydayIntent;
   }
-  const topicIntent = detectTopicSpecificIntent(text, hasAny);
-  if (topicIntent) return topicIntent;
   const everydayIntent = detectEverydayIntent(text, hasAny);
   if (everydayIntent) return everydayIntent;
   if (hasAny(["afraid", "scared", "fear", "terrified", "frightened"])) return "fear";
@@ -3553,7 +3920,23 @@ function buildQuestionForTarget(target) {
     "Premonitory urge": "Do you feel a build-up or urge before the tic happens?",
     Suppressibility: "Can you suppress the tic for a while, and what happens afterward?",
     Course: "Do the tics get worse with stress, fatigue, or excitement?",
-    Comorbidities: "Do you also have attention problems, compulsive behaviors, anxiety, or mood symptoms?"
+    Comorbidities: "Do you also have attention problems, compulsive behaviors, anxiety, or mood symptoms?",
+    Opening: "Where would you like to begin today?",
+    Rapport: "It sounds like you have been carrying a lot on your own.",
+    "Problem definition": "What has been the hardest part for you recently?",
+    "Emotion reflection": "When you think about that situation, what feelings come up first?",
+    Goals: "What would feel like a helpful first goal for our work together?",
+    Coping: "What have you tried so far that helps, even briefly?",
+    Strengths: "What strengths helped you keep going through this?",
+    "Next steps": "What is one small step you could try this week?",
+    "Developmental history": "When did you first become concerned about your child's development?",
+    Language: "Can you describe your child's language development and current communication?",
+    "Social communication": "How does your child use eye contact, gestures, and back-and-forth interaction?",
+    "Repetitive behaviors": "Are there repetitive behaviors, intense interests, or strong distress with changes in routine?",
+    Sensory: "Does your child have sensory sensitivities, such as sound, texture, food, or clothing sensitivities?",
+    "Adaptive function": "What daily living skills are difficult, such as dressing, eating, toileting, or transitions?",
+    "School support": "What support or accommodations are available at school?",
+    "Family history": "Is there a family history of developmental, language, learning, ADHD, or autism-related concerns?"
   };
   return map[target] || getSessionEssentials("natural")[0] || currentTopic.essentials.natural[0];
 }
