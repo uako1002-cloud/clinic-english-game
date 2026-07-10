@@ -369,6 +369,114 @@ const topics = [
       answer: 0
     },
     order: "What do you usually do after work"
+  },
+  {
+    id: "travel",
+    label: "여행영어",
+    title: "Travel English",
+    patient: "Casey Kim",
+    brief: "A traveler practicing airport, hotel, restaurant, directions, shopping, and emergency conversations.",
+    targets: ["Airport", "Hotel", "Directions", "Restaurant", "Shopping", "Transportation", "Emergency"],
+    patientLines: [
+      "Hi. I am traveling next week, and I want to practice useful English for the trip.",
+      "I want to feel more comfortable at the airport, hotel, restaurants, and train stations.",
+      "I get nervous when I need to ask for directions or explain a problem in English.",
+      "Please ask me travel situations, and I will try to answer like I am abroad."
+    ],
+    essentials: {
+      easy: [
+        "Where is the check-in counter?",
+        "I have a reservation under Kim.",
+        "Could you tell me how to get to the station?",
+        "Could I see the menu, please?",
+        "How much is this?"
+      ],
+      natural: [
+        "Could you tell me where the check-in counter is?",
+        "I have a reservation under the name Kim.",
+        "What is the easiest way to get to the station from here?",
+        "Could I get a table for two, please?",
+        "Could you help me? I think I lost my passport."
+      ],
+      professional: [
+        "Could you please direct me to the international check-in counter?",
+        "I have a reservation under the name Kim, and I would like to check in.",
+        "What would be the most convenient way to get to the station from this location?",
+        "Could we have a table for two, and may I see the menu when you have a moment?",
+        "I need assistance. I may have lost my passport and need to contact the embassy."
+      ]
+    },
+    blank: {
+      prompt: "I have a reservation ______ the name Kim.",
+      answer: "under",
+      hint: "reservation under the name..."
+    },
+    choice: {
+      prompt: "Which sentence is most appropriate at a hotel check-in desk?",
+      options: [
+        "I have a reservation under the name Kim.",
+        "Give me my room right now.",
+        "Where do airplanes sleep?",
+        "I want to buy this train.",
+        "My passport eats dinner."
+      ],
+      answer: 0
+    },
+    order: "Could you tell me where the station is"
+  },
+  {
+    id: "tic",
+    label: "틱장애",
+    title: "Tic disorder assessment",
+    patient: "Min Lee",
+    brief: "16-year-old student with blinking, throat-clearing sounds, and stress-related symptom worsening.",
+    targets: ["Onset", "Motor tics", "Vocal tics", "Premonitory urge", "Suppressibility", "Course", "Impairment", "Comorbidities"],
+    patientLines: [
+      "I blink a lot and sometimes make a small throat-clearing sound without meaning to.",
+      "It gets worse when I am stressed or tired, especially at school.",
+      "I can hold it in for a short time, but then it feels uncomfortable.",
+      "Some classmates notice it, and that makes me embarrassed."
+    ],
+    essentials: {
+      easy: [
+        "When did the movements or sounds first start?",
+        "What kinds of movements do you notice?",
+        "Do you make any sounds or throat-clearing noises?",
+        "Do you feel an urge before the tic happens?",
+        "Can you hold it in for a short time?"
+      ],
+      natural: [
+        "When did you first notice the movements or sounds?",
+        "Can you describe the movements, such as blinking, facial movements, or shoulder movements?",
+        "Do you have any vocal tics, such as throat-clearing, sniffing, or small sounds?",
+        "Do you feel a build-up or urge before the tic happens?",
+        "Can you suppress the tic for a while, and what happens afterward?"
+      ],
+      professional: [
+        "At what age did the motor or vocal tics first appear?",
+        "Which motor tics are present, such as eye blinking, facial grimacing, neck movements, or shoulder movements?",
+        "Are there vocal tics such as throat-clearing, sniffing, grunting, or words?",
+        "Is there a premonitory urge, tension, or sensory build-up before the tic?",
+        "To what extent can the tics be voluntarily suppressed, and is there a rebound afterward?"
+      ]
+    },
+    blank: {
+      prompt: "Do you feel a build-up or ______ before the tic happens?",
+      answer: "urge",
+      hint: "premonitory ___"
+    },
+    choice: {
+      prompt: "Which question best assesses a premonitory urge in tic disorder?",
+      options: [
+        "Do you feel a build-up or urge before the tic happens?",
+        "Do you prefer studying in the morning?",
+        "How often do you eat spicy food?",
+        "Did you travel abroad last year?",
+        "What is your favorite school subject?"
+      ],
+      answer: 0
+    },
+    order: "Do you feel an urge before the tic happens"
   }
 ];
 
@@ -379,11 +487,17 @@ const topicLabels = {
   adhd: "ADHD",
   suicide: "자살위험 평가",
   medication: "약물 설명",
-  daily: "일상 대화"
+  daily: "일상 대화",
+  travel: "여행영어",
+  tic: "틱장애"
 };
 
 function getTopicLabel(topic) {
   return topicLabels[topic.id] || topic.label;
+}
+
+function isFreeConversationTopic(topic = currentTopic) {
+  return ["daily", "travel"].includes(topic.id);
 }
 
 const extraEssentials = {
@@ -652,6 +766,82 @@ const extraEssentials = {
       "What topics do you find easiest to talk about in English?",
       "Would you like to talk about your day, your interests, or something completely different?"
     ]
+  },
+  travel: {
+    easy: [
+      "Where is the baggage claim?",
+      "I would like to check in.",
+      "Can I have a window seat?",
+      "How do I get to the hotel?",
+      "Could you call a taxi for me?",
+      "I would like to order this.",
+      "Can I pay by card?",
+      "Could you speak more slowly?",
+      "I am lost.",
+      "I need help."
+    ],
+    natural: [
+      "Could you tell me where baggage claim is?",
+      "I would like to check in for my flight.",
+      "Would it be possible to get a window seat?",
+      "What is the easiest way to get to my hotel?",
+      "Could you call a taxi for me, please?",
+      "I would like to order this dish, please.",
+      "Do you accept credit cards?",
+      "Could you speak a little more slowly, please?",
+      "I think I am lost. Could you help me find this address?",
+      "I need help. Could you tell me where the nearest police station is?"
+    ],
+    professional: [
+      "Could you direct me to baggage claim for international arrivals?",
+      "I would like to check in for my flight and confirm my baggage allowance.",
+      "Would it be possible to request a window seat if one is available?",
+      "What is the most convenient way to get from here to my hotel?",
+      "Could you arrange a taxi to this address, please?",
+      "I would like to order this dish, and could you tell me whether it contains nuts?",
+      "Do you accept international credit cards, or should I pay in cash?",
+      "Could you repeat that a little more slowly so I can make sure I understood?",
+      "I am lost and trying to get to this address. Could you point me in the right direction?",
+      "I need urgent assistance and would like to contact the police, my embassy, or my travel insurance company."
+    ]
+  },
+  tic: {
+    easy: [
+      "How often do the tics happen?",
+      "Do they get worse with stress?",
+      "Do they happen less when you are focused?",
+      "Do the tics bother you at school?",
+      "Do people tease you about the tics?",
+      "Do you have trouble paying attention?",
+      "Do you feel anxious because of the tics?",
+      "Has anyone in your family had tics?",
+      "Have you taken any medicine for this?",
+      "What helps the tics feel better?"
+    ],
+    natural: [
+      "How often do the tics happen during a typical day?",
+      "Do they become worse when you are stressed, tired, or excited?",
+      "Do they decrease when you are focused on a task or activity?",
+      "How much do the tics interfere with school, friends, or daily life?",
+      "Have classmates or other people teased you or commented on the tics?",
+      "Do you also have trouble with attention, compulsive behaviors, or anxiety?",
+      "How do you feel emotionally when the tics happen in front of others?",
+      "Does anyone in your family have tics or similar movements or sounds?",
+      "Have you tried medication, therapy, or habit-reversal training before?",
+      "What situations make the tics better or worse?"
+    ],
+    professional: [
+      "What is the frequency, duration, and pattern of the tics across a typical day?",
+      "Are the tics exacerbated by stress, fatigue, excitement, or social attention?",
+      "Do the tics diminish during focused activity and increase during relaxation afterward?",
+      "What functional impairment is present at school, socially, or within the family?",
+      "Has there been bullying, embarrassment, avoidance, or distress related to the tics?",
+      "Are there comorbid symptoms of ADHD, obsessive-compulsive symptoms, anxiety, mood symptoms, or sleep problems?",
+      "What emotional response follows the tics, such as shame, frustration, anxiety, or relief?",
+      "Is there a family history of tics, Tourette syndrome, OCD, or ADHD?",
+      "What prior treatments have been tried, including psychoeducation, CBIT or habit-reversal training, and medication?",
+      "Which antecedents, settings, or consequences appear to worsen or reduce the tics?"
+    ]
   }
 };
 
@@ -910,6 +1100,58 @@ const advancedQuizBank = {
       answer: 0,
       explanation: "Rapport-building uses a brief response plus a natural everyday follow-up."
     }
+  ],
+  travel: [
+    {
+      prompt: "You arrive at a hotel after a long flight. Which sentence is polite, clear, and appropriate for check-in?",
+      options: [
+        "I have a reservation under the name Kim, and I would like to check in.",
+        "Give me the room I bought online.",
+        "I need the sleep place that belongs to me.",
+        "Where is my airplane seat in this hotel?",
+        "You should already know my name."
+      ],
+      answer: 0,
+      explanation: "The correct answer uses the standard hotel phrase 'reservation under the name...' and makes the request politely."
+    },
+    {
+      prompt: "You are lost near a train station and need directions to your hotel. Which request is most natural?",
+      options: [
+        "Could you tell me the easiest way to get to this hotel from here?",
+        "Where hotel go from this street?",
+        "Tell me the correct road immediately.",
+        "I am missing, so bring me to my room.",
+        "Is the hotel delicious from the station?"
+      ],
+      answer: 0,
+      explanation: "The correct answer politely asks for directions and gives the listener enough context."
+    }
+  ],
+  tic: [
+    {
+      prompt: "A teenager reports blinking and throat-clearing that worsen with stress. Which question best assesses a premonitory urge?",
+      options: [
+        "Do you feel a build-up or urge before the tic happens?",
+        "Do you blink because your eyes are dry?",
+        "Are you trying to annoy your classmates?",
+        "Do you prefer quiet classrooms?",
+        "How many hours do you study after school?"
+      ],
+      answer: 0,
+      explanation: "A premonitory urge is a sensory build-up or tension before the tic."
+    },
+    {
+      prompt: "The patient says, \"I can hold it in for a little while, but then it feels worse.\" Which follow-up best clarifies suppressibility?",
+      options: [
+        "Can you suppress the tic for a while, and what happens afterward?",
+        "Do you promise to stop doing it at school?",
+        "Would you feel better if people ignored it?",
+        "Do you have trouble sleeping after homework?",
+        "Is blinking your only eye symptom?"
+      ],
+      answer: 0,
+      explanation: "Suppressibility and rebound discomfort are important features to assess in tic disorders."
+    }
   ]
 };
 
@@ -1155,8 +1397,8 @@ function startSession(topicId = topicSelect.value, options = {}) {
   renderSentences();
   renderChecklist();
   renderMode();
-  coachText.textContent = currentTopic.id === "daily"
-    ? "대화 시작 후 말하기 버튼을 누르세요. 일상, 취미, 가족, 음식, 주말 계획처럼 가벼운 영어 대화를 이어갈 수 있습니다."
+  coachText.textContent = isFreeConversationTopic()
+    ? "대화 시작 후 말하기 버튼을 누르세요. 일상 또는 여행 상황처럼 자유롭게 영어 대화를 이어갈 수 있습니다."
     : "진료 시작 후 말하기 버튼을 누르세요. 알림음 뒤에 질문하고, 끝나면 말하기 종료를 누르면 환자가 글과 음성으로 답합니다.";
 }
 
@@ -1219,7 +1461,7 @@ function handleCommand() {
     return;
   }
 
-  coachText.textContent = "사용 가능한 명령: 시작, 시작 일상, 시작 공황, 시작 ADHD, 피드백, 짧게, 자세히, 다시, 문장만, 시험처럼";
+  coachText.textContent = "사용 가능한 명령: 시작, 시작 일상, 시작 여행, 시작 틱, 시작 공황, 시작 ADHD, 피드백, 짧게, 자세히, 다시, 문장만, 시험처럼";
   commandInput.value = "";
 }
 
@@ -1232,7 +1474,9 @@ function findTopicId(text) {
     adhd: ["adhd", "주의력"],
     suicide: ["자살", "위험", "risk", "suicide"],
     medication: ["약물", "약", "medication", "ssri"],
-    daily: ["일상", "자유", "대화", "잡담", "생활", "daily", "free", "conversation", "smalltalk", "small talk"]
+    daily: ["일상", "자유", "대화", "잡담", "생활", "daily", "free", "conversation", "smalltalk", "small talk"],
+    travel: ["여행", "여행영어", "공항", "호텔", "travel", "trip", "airport", "hotel"],
+    tic: ["틱", "틱장애", "뚜렛", "tourette", "tic", "tics"]
   };
   return Object.entries(aliases).find(([, keys]) => keys.some((key) => compact.includes(key)))?.[0] || null;
 }
@@ -1319,19 +1563,19 @@ function renderMode() {
   answerZone.innerHTML = "";
 
   if (currentMode === "roleplay") {
-    promptTitle.textContent = currentTopic.id === "daily"
+    promptTitle.textContent = isFreeConversationTopic()
       ? "대화 시작 후 랜덤으로 먼저 말을 건넵니다"
       : "진료 시작 후 랜덤으로 의사 또는 환자가 먼저 말합니다";
     checkBtn.textContent = "질문 보내기";
     visitStartBtn.style.display = "";
-    visitStartBtn.textContent = visitStarted ? "다시 시작" : (currentTopic.id === "daily" ? "대화 시작" : "진료 시작");
+    visitStartBtn.textContent = visitStarted ? "다시 시작" : (isFreeConversationTopic() ? "대화 시작" : "진료 시작");
     micBtn.disabled = !visitStarted;
     micBtn.style.display = "";
     stopBtn.hidden = true;
     checkBtn.disabled = !visitStarted;
     voiceStatus.textContent = visitStarted
       ? "말하기를 누르면 알림음이 납니다. 질문 후 말하기 종료를 누르세요. 환자는 글과 음성으로 답합니다."
-      : currentTopic.id === "daily"
+      : isFreeConversationTopic()
         ? "먼저 대화 시작을 누르세요. 누가 먼저 말할지 랜덤으로 정해집니다."
         : "먼저 진료 시작을 누르세요. 의사 선공/환자 선공이 랜덤으로 정해집니다.";
     doctorBubble.textContent = visitStarted
@@ -1412,7 +1656,7 @@ function renderMode() {
   }
 
   if (currentMode === "exam") {
-    promptTitle.textContent = currentTopic.id === "daily" ? "자유 대화처럼 질문하세요" : "진단명을 숨긴 초진처럼 질문하세요";
+    promptTitle.textContent = isFreeConversationTopic() ? "자유 대화처럼 질문하세요" : "진단명을 숨긴 초진처럼 질문하세요";
     checkBtn.textContent = "질문 보내기";
     visitStartBtn.style.display = "";
     visitStartBtn.textContent = visitStarted ? "다시 시작" : "진료 시작";
@@ -2069,6 +2313,13 @@ function evaluateClinicalQuestion(value) {
     ["Hobbies", ["hobby", "hobbies", "free time", "relax", "music", "movie", "book", "exercise"]],
     ["Food and preferences", ["food", "eat", "coffee", "tea", "favorite", "like", "prefer"]],
     ["Plans", ["plan", "weekend", "tonight", "tomorrow", "vacation", "looking forward"]],
+    ["Airport", ["airport", "check in", "check-in", "baggage", "boarding", "gate", "flight"]],
+    ["Hotel", ["hotel", "reservation", "room", "check in", "check-in", "front desk"]],
+    ["Directions", ["direction", "directions", "lost", "where is", "how do i get", "easiest way"]],
+    ["Restaurant", ["restaurant", "menu", "table", "order", "bill", "dish", "ingredients"]],
+    ["Shopping", ["shopping", "price", "how much", "pay", "card", "cash", "size"]],
+    ["Transportation", ["train", "taxi", "bus", "station", "subway", "transportation", "route"]],
+    ["Emergency", ["emergency", "help", "passport", "police", "embassy", "lost", "urgent"]],
     ["Chief complaint", ["what brings", "how can i help", "main concern", "problem"]],
     ["Duration", ["how long", "when did", "duration"]],
     ["Anhedonia", ["enjoy", "interest", "pleasure"]],
@@ -2106,7 +2357,13 @@ function evaluateClinicalQuestion(value) {
     ["Warning effects", ["serious", "warning", "call"]],
     ["Adherence", ["take it", "regularly", "adherence"]],
     ["Stopping risk", ["stop", "suddenly", "taper"]],
-    ["Follow-up", ["follow up", "next visit", "monitor"]]
+    ["Follow-up", ["follow up", "next visit", "monitor"]],
+    ["Motor tics", ["movement", "blinking", "motor", "shoulder", "neck", "facial"]],
+    ["Vocal tics", ["sound", "throat", "clearing", "sniff", "vocal", "noise"]],
+    ["Premonitory urge", ["urge", "build up", "build-up", "tension", "before the tic"]],
+    ["Suppressibility", ["suppress", "hold it", "hold in", "control", "rebound"]],
+    ["Course", ["worse", "better", "stress", "tired", "excited", "course", "change"]],
+    ["Comorbidities", ["adhd", "ocd", "anxiety", "attention", "compulsive", "mood"]]
   ];
 
   let matched = [];
@@ -2127,9 +2384,9 @@ function evaluateClinicalQuestion(value) {
   const easy = getSessionEssentials("easy")[0] || currentTopic.essentials.easy[0];
   const natural = getSessionEssentials("natural")[0] || currentTopic.essentials.natural[0];
   const professional = getSessionEssentials("professional")[0] || currentTopic.essentials.professional[0];
-  if (currentTopic.id === "daily") {
+  if (isFreeConversationTopic()) {
     const message = [
-      matched.length ? `좋아요. 이어간 대화 항목: ${matched.join(", ")}` : "의미는 전달됐습니다. 더 자연스럽게 하려면 일상 소재를 하나 구체적으로 물어보세요.",
+      matched.length ? `좋아요. 이어간 대화 항목: ${matched.join(", ")}` : "의미는 전달됐습니다. 더 자연스럽게 하려면 상황이나 소재를 하나 구체적으로 물어보세요.",
       empathy ? "상대 반응을 받아주는 표현도 들어갔습니다." : "상대 답변에 짧게 반응한 뒤 다음 질문을 붙이면 더 자연스럽습니다.",
       "",
       `Easy version: ${easy}`,
@@ -2547,6 +2804,94 @@ const patientResponseBank = {
       "That is a nice everyday question. I can answer that.",
       "I like this kind of normal conversation. It feels easier to keep going."
     ]
+  },
+  travel: {
+    greeting: [
+      "Hi. I would like to practice travel English today.",
+      "Hello. I am getting ready for a trip, so travel situations would help."
+    ],
+    airport: [
+      "At the airport, I want to ask about check-in, baggage, and boarding gates.",
+      "I get nervous when I need to ask airport staff where to go."
+    ],
+    hotel: [
+      "At a hotel, I need to check in and ask about my reservation.",
+      "I want to practice saying that I have a reservation under my name."
+    ],
+    directions: [
+      "I often need help finding a station, hotel, or restaurant.",
+      "If I get lost, I want to ask for directions politely."
+    ],
+    restaurant: [
+      "At restaurants, I want to order food and ask about ingredients.",
+      "I would like to practice asking for a table, a menu, and the bill."
+    ],
+    shopping: [
+      "When shopping, I need to ask about prices, sizes, and payment.",
+      "I want to ask whether I can pay by card."
+    ],
+    transportation: [
+      "I want to ask about trains, taxis, buses, and the easiest route.",
+      "Transportation is the part that makes me most nervous when traveling."
+    ],
+    emergency: [
+      "If something goes wrong, I need to ask for help clearly.",
+      "I want to practice what to say if I lose my passport or need the police."
+    ],
+    general: [
+      "That sounds like a useful travel situation.",
+      "I can try that. Please give me a travel situation."
+    ]
+  },
+  tic: {
+    chief: [
+      "I blink a lot and make a throat-clearing sound without meaning to.",
+      "The movements and sounds are embarrassing, especially at school."
+    ],
+    onset: [
+      "It started around elementary school, but it became more noticeable this year.",
+      "I first noticed the blinking a few years ago."
+    ],
+    motorTics: [
+      "The main movement is blinking, and sometimes my shoulder jerks.",
+      "I have facial movements and sometimes a quick neck movement."
+    ],
+    vocalTics: [
+      "I clear my throat or make a small sound without meaning to.",
+      "Sometimes I sniff or make a quiet noise repeatedly."
+    ],
+    urge: [
+      "I feel a pressure or build-up before it happens.",
+      "There is an uncomfortable urge, and doing the tic relieves it for a moment."
+    ],
+    suppressibility: [
+      "I can hold it in for a short time, but it feels uncomfortable.",
+      "If I suppress it at school, it often comes out more when I get home."
+    ],
+    course: [
+      "It gets worse when I am stressed, tired, or excited.",
+      "Some weeks are better than others."
+    ],
+    function: [
+      "It bothers me at school because classmates notice it.",
+      "I avoid speaking up in class because I worry people will see or hear it."
+    ],
+    comorbidities: [
+      "I also have trouble focusing sometimes, and I check things repeatedly when I am stressed.",
+      "I feel anxious about people noticing the tics."
+    ],
+    medication: [
+      "I have not tried medication for it.",
+      "I have heard about therapy for tics, but I do not know much about it."
+    ],
+    family: [
+      "My uncle had some blinking tics when he was younger.",
+      "I am not sure, but my parents say someone in the family had similar symptoms."
+    ],
+    general: [
+      "It is hard to explain, but I can try.",
+      "The tics feel partly outside my control."
+    ]
   }
 };
 
@@ -2924,6 +3269,29 @@ function detectTopicSpecificIntent(text, hasAny) {
     if (hasAny(["dependent", "addictive", "addiction", "how long will i need", "medication", "medicine", "drug", "ssri", "take it"])) return "medication";
   }
 
+  if (currentTopic.id === "travel") {
+    if (hasAny(["airport", "flight", "check in", "check-in", "baggage", "boarding", "gate", "seat"])) return "airport";
+    if (hasAny(["hotel", "reservation", "room", "front desk", "check in", "check-in"])) return "hotel";
+    if (hasAny(["direction", "directions", "lost", "where is", "how do i get", "easiest way", "address"])) return "directions";
+    if (hasAny(["restaurant", "menu", "table", "order", "bill", "dish", "ingredient", "allergy"])) return "restaurant";
+    if (hasAny(["shopping", "how much", "price", "pay", "card", "cash", "size", "receipt"])) return "shopping";
+    if (hasAny(["train", "taxi", "bus", "station", "subway", "route", "transportation"])) return "transportation";
+    if (hasAny(["emergency", "passport", "police", "embassy", "lost passport", "urgent", "help"])) return "emergency";
+  }
+
+  if (currentTopic.id === "tic") {
+    if (hasAny(["motor", "movement", "blinking", "blink", "shoulder", "neck", "facial", "jerk"])) return "motorTics";
+    if (hasAny(["vocal", "sound", "throat", "clearing", "sniff", "noise", "grunt"])) return "vocalTics";
+    if (hasAny(["urge", "premonitory", "build up", "build-up", "tension", "before the tic"])) return "urge";
+    if (hasAny(["suppress", "hold it", "hold in", "control", "rebound"])) return "suppressibility";
+    if (hasAny(["worse", "better", "stress", "tired", "excited", "course", "change"])) return "course";
+    if (hasAny(["school", "class", "classmate", "tease", "embarrass", "function", "daily", "interfere"])) return "function";
+    if (hasAny(["adhd", "ocd", "attention", "compulsive", "anxiety", "mood", "sleep"])) return "comorbidities";
+    if (hasAny(["family", "parent", "uncle", "history", "tourette"])) return "family";
+    if (hasAny(["medicine", "medication", "therapy", "habit reversal", "cbit", "treatment"])) return "medication";
+    if (hasAny(["when did", "start", "begin", "onset", "first notice", "age"])) return "onset";
+  }
+
   return null;
 }
 
@@ -2949,7 +3317,7 @@ function detectQuestionIntent(question) {
   const hasAny = (words) => words.some((word) => text.includes(word));
 
   if (/^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(text)) return "greeting";
-  if (currentTopic.id === "daily" && hasAny(["how are you feeling", "how do you feel", "how have you been feeling", "how have you felt"])) return "howAreYou";
+  if (isFreeConversationTopic() && hasAny(["how are you feeling", "how do you feel", "how have you been feeling", "how have you felt"])) return "howAreYou";
   if (hasAny(["how are you feeling", "how do you feel", "how have you been feeling", "how has your mood", "how is your mood", "how have you felt"])) return "mood";
   if (hasAny(["how are you", "how is it going", "how are things", "how do you do", "how are you doing", "how have you been"])) return "howAreYou";
   if (hasAny(["nice to meet you", "good to meet you", "pleased to meet you", "i am doctor", "i am dr", "i'm doctor", "i'm dr"])) return "niceToMeetYou";
@@ -2962,7 +3330,7 @@ function detectQuestionIntent(question) {
   if (hasAny(["how old are you", "your age", "what is your age"])) return "age";
   if (hasAny(["are you comfortable", "is this comfortable", "do you feel comfortable", "are you okay talking"])) return "comfort";
   if (hasAny(["is it okay if i ask", "can i ask", "may i ask", "is it alright if"])) return "permission";
-  if (currentTopic.id === "daily") {
+  if (isFreeConversationTopic()) {
     const everydayIntent = detectEverydayIntent(text, hasAny);
     if (everydayIntent) return everydayIntent;
   }
@@ -3035,8 +3403,10 @@ function showHint() {
   } else if (currentMode === "order") {
     const orderSentence = currentOrderSentence || cleanOrderSentence(currentTopic.order);
     coachText.textContent = `힌트: ${orderSentence.split(" ").slice(0, 3).join(" ")} ...`;
-  } else if (currentTopic.id === "daily") {
-    coachText.textContent = "힌트: 상대의 답을 짧게 받아주고, 일상 소재 하나를 더 물어보세요. 예: That sounds nice. What do you usually do after work?";
+  } else if (isFreeConversationTopic()) {
+    coachText.textContent = currentTopic.id === "travel"
+      ? "힌트: 여행 상황을 하나 정하고, 정중하게 요청하세요. 예: Could you tell me the easiest way to get to the station?"
+      : "힌트: 상대의 답을 짧게 받아주고, 일상 소재 하나를 더 물어보세요. 예: That sounds nice. What do you usually do after work?";
   } else {
     coachText.textContent = "힌트: 공감 한마디 후, 기간/빈도/위험도/기능 손상 중 하나를 직접 물어보세요.";
   }
@@ -3073,14 +3443,14 @@ function nextRound() {
 
 function showFeedback() {
   const missed = currentTopic.targets.filter((target) => !activeTargets.has(target));
-  if (currentTopic.id === "daily") {
+  if (isFreeConversationTopic()) {
     const fluency = Math.min(10, 5 + Math.floor(roleplayLog.length / 2) + streak);
     const variety = Math.min(10, 4 + activeTargets.size);
     const essential = getSessionEssentials("natural");
     if (feedbackStyle === "short") {
       coachText.textContent = [
         "어색한 점: 질문이 너무 짧게 끊기면 대화가 이어지기 어렵습니다.",
-        `아직 덜 다룬 일상 소재: ${missed.length ? missed.join(", ") : "없음"}`,
+        `아직 덜 다룬 대화 항목: ${missed.length ? missed.join(", ") : "없음"}`,
         `다음 질문: ${missed[0] ? buildQuestionForTarget(missed[0]) : essential[essential.length - 1]}`,
         `점수: Fluency ${fluency}/10, Topic variety ${variety}/10`
       ].join("\n");
@@ -3091,8 +3461,8 @@ function showFeedback() {
       "2. 자연스러운 표현: 짧은 반응 1문장 + follow-up question 1문장 구조를 유지하세요.",
       `3. 더 쉬운 표현: ${getSessionEssentials("easy")[0] || currentTopic.essentials.easy[0]}`,
       `4. 더 자연스러운 표현: ${essential[0] || currentTopic.essentials.natural[0]}`,
-      `5. 잘한 점: ${roleplayLog.length ? "일상 대화를 영어로 이어갔습니다." : "필수 문장을 먼저 확인했습니다."}`,
-      `6. 아직 덜 다룬 일상 소재: ${missed.length ? missed.join(", ") : "없음"}`,
+      `5. 잘한 점: ${roleplayLog.length ? "영어 대화를 이어갔습니다." : "필수 문장을 먼저 확인했습니다."}`,
+      `6. 아직 덜 다룬 대화 항목: ${missed.length ? missed.join(", ") : "없음"}`,
       `7. 다음 질문: ${missed[0] ? buildQuestionForTarget(missed[0]) : essential[essential.length - 1]}`,
       `8. 오늘 외울 문장 5개:\n${essential.map((item, index) => `${index + 1}. ${item}`).join("\n")}`,
       "",
@@ -3104,8 +3474,8 @@ function showFeedback() {
       </div>`,
       "",
       feedbackStyle === "detailed"
-        ? "9. 다음 훈련 과제: 일상 대화 8턴을 진행하세요. 하루, 일/공부, 가족/친구, 취미, 음식, 주말 계획을 최소 한 번씩 물어보세요."
-        : "9. 다음 훈련 과제: 일상 대화 5턴을 진행하고, 매번 짧은 반응 뒤에 follow-up question을 붙이세요."
+        ? "9. 다음 훈련 과제: 같은 주제로 8턴을 진행하세요. 매번 짧은 반응 뒤에 follow-up question을 붙이세요."
+        : "9. 다음 훈련 과제: 같은 주제로 5턴을 진행하고, 매번 짧은 반응 뒤에 follow-up question을 붙이세요."
     ].join("\n");
     return;
   }
@@ -3170,7 +3540,20 @@ function buildQuestionForTarget(target) {
     "Family and relationships": "How do you usually spend time with family or friends?",
     Hobbies: "What do you like to do in your free time?",
     "Food and preferences": "What kind of food have you been enjoying lately?",
-    Plans: "Do you have any plans for the weekend?"
+    Plans: "Do you have any plans for the weekend?",
+    Airport: "Could you tell me where the check-in counter is?",
+    Hotel: "I have a reservation under the name Kim.",
+    Directions: "What is the easiest way to get to the station from here?",
+    Restaurant: "Could I get a table for two, please?",
+    Shopping: "Do you accept credit cards?",
+    Transportation: "Which train should I take to get downtown?",
+    Emergency: "I need help. I think I lost my passport.",
+    "Motor tics": "Can you describe the movements, such as blinking or shoulder movements?",
+    "Vocal tics": "Do you have any vocal tics, such as throat-clearing or sniffing?",
+    "Premonitory urge": "Do you feel a build-up or urge before the tic happens?",
+    Suppressibility: "Can you suppress the tic for a while, and what happens afterward?",
+    Course: "Do the tics get worse with stress, fatigue, or excitement?",
+    Comorbidities: "Do you also have attention problems, compulsive behaviors, anxiety, or mood symptoms?"
   };
   return map[target] || getSessionEssentials("natural")[0] || currentTopic.essentials.natural[0];
 }
